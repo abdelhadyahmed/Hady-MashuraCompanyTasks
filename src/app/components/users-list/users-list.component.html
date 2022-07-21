@@ -1,0 +1,191 @@
+<div class="container">
+  <div class="search-container">
+    <form class="d-flex" (submit)="searchById()">
+      <input
+        class="form-control me-2"
+        type="search"
+        name="userId"
+        placeholder="Search by id"
+        aria-label="Search"
+        [(ngModel)]="userId"
+      />
+      <button class="btn btn-outline-success" type="submit">GetUser</button>
+    </form>
+    <table *ngIf="searchedUser" class="table table-striped table-hover mt-2">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Username</th>
+          <th scope="col">Email</th>
+          <th scope="col">Phone</th>
+          <th scope="col">company</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ searchedUser.name }}</td>
+          <td>{{ searchedUser.username }}</td>
+          <td>{{ searchedUser.email }}</td>
+          <td>{{ searchedUser.phone }}</td>
+          <td>{{ searchedUser.company.name }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="form-container">
+    <form
+      #target
+      class="form mb-2"
+      [formGroup]="form"
+      (submit)="addUser(target)"
+    >
+      <h1>Add user</h1>
+      <div class="alert alert-danger" *ngIf="form.errors?.['invalid']">
+        Please check your fields if it is not valid or empty!
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="name">Name</label>
+        <input
+          class="form-control"
+          type="text"
+          formControlName="name"
+          placeholder="Please enter your name..."
+        />
+        <form-error [control]="form.get('name')"></form-error>
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="username">UserName</label>
+        <input
+          class="form-control"
+          type="text"
+          formControlName="username"
+          placeholder="Please enter your username..."
+        />
+        <form-error [control]="form.get('username')"></form-error>
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="email">Email</label>
+        <input
+          class="form-control"
+          type="text"
+          formControlName="email"
+          placeholder="Enter your Email"
+        />
+        <form-error [control]="form.get('email')"></form-error>
+      </div>
+      <div formGroupName="address">
+        <div class="mb-2">
+          <label class="form-label" for="street">Street name</label>
+          <input
+            class="form-control"
+            type="text"
+            formControlName="street"
+            placeholder="Enter your street name"
+          />
+          <form-error [control]="form.get('address.street')"></form-error>
+        </div>
+        <div class="mb-2">
+          <label class="form-label" for="suite">Suite</label>
+          <input
+            class="form-control"
+            type="text"
+            formControlName="suite"
+            placeholder="Enter your suite"
+          />
+          <form-error [control]="form.get('address.suite')"></form-error>
+        </div>
+        <div class="mb-2">
+          <label class="form-label" for="city">City</label>
+          <input
+            class="form-control"
+            type="text"
+            formControlName="city"
+            placeholder="City"
+          />
+          <form-error [control]="form.get('address.city')"></form-error>
+        </div>
+        <div class="mb-2">
+          <label class="form-label" for="zipcode">zipcode</label>
+          <input
+            class="form-control"
+            type="text"
+            formControlName="zipcode"
+            placeholder="Enter your zipcode"
+          />
+          <form-error [control]="form.get('address.zipcode')"></form-error>
+        </div>
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="phone">Phone</label>
+        <input
+          class="form-control"
+          type="text"
+          formControlName="phone"
+          placeholder="Enter your phone number"
+        />
+        <form-error [control]="form.get('phone')"></form-error>
+      </div>
+      <div class="mb-2">
+        <label class="form-label" for="website">Website</label>
+        <input
+          class="form-control"
+          type="text"
+          formControlName="website"
+          placeholder="Your website"
+        />
+        <form-error [control]="form.get('website')"></form-error>
+      </div>
+      <div formGroupName="company">
+        <div class="mb-2">
+          <label class="form-label" for="website">Company name</label>
+          <input
+            class="form-control"
+            type="text"
+            formControlName="name"
+            placeholder="Your Company name"
+          />
+          <form-error [control]="form.get('company.name')"></form-error>
+        </div>
+      </div>
+      <button class="btn btn-custom btn-primary">Add</button>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <table class="table table-striped table-hover mt-2">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Username</th>
+          <th scope="col">Email</th>
+          <th scope="col">Phone</th>
+          <th scope="col">company</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.name }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.phone }}</td>
+          <td>{{ user.company.name }}</td>
+          <td>
+            <div class="d-flex justify-content-between align-content-center">
+              <mat-icon
+                [ngStyle]="{ color: 'orange', cursor: 'pointer' }"
+                (click)="deleteUser(user)"
+                >edit</mat-icon
+              >
+              <mat-icon
+                [ngStyle]="{ color: 'red', cursor: 'pointer' }"
+                (click)="deleteUser(user)"
+                >delete</mat-icon
+              >
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

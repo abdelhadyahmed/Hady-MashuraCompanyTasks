@@ -1,0 +1,21 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "Hady went to celebrate",
+      "body": "Hady went to celebrate"
+    }
+  ],
+  "users": [
+    {
+      "username": "Hady",
+      "password": "pas",
+      "id": 3
+    },
+    {
+      "username": "Marwaa",
+      "password": "passwo",
+      "id": 5
+    }
+  ]
+}
