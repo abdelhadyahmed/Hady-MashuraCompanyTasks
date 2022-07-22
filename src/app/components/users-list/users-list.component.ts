@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/types/user';
@@ -10,13 +10,16 @@ import { UserValidators } from 'src/app/validators/user.validators';
   styleUrls: ['./users-list.component.css'],
 })
 export class UsersListComponent implements OnInit {
+  // @ViewChild('target') target!: ElementRef;
   form: FormGroup;
   users!: User[];
   searchedUser!: User;
   userId: string = '';
+  editToggle: boolean = false;
 
   constructor(fb: FormBuilder, private usersApi: UserService) {
     this.form = fb.group({
+      id: [''],
       name: ['', Validators.required],
       username: ['', [Validators.required, UserValidators.canNotContainSpace]],
       email: ['', [Validators.required, Validators.email]],
@@ -42,6 +45,41 @@ export class UsersListComponent implements OnInit {
     });
   }
 
+  editUser(user: User) {
+    if (this.editToggle) {
+      this.editToggle = !this.editToggle;
+      this.form.reset();
+    } else {
+      // make all fields touchd to get all errors
+      this.form.patchValue(user);
+      this.editToggle = !this.editToggle;
+    }
+  }
+
+  cancelEdit() {
+    console.log(this.form.value);
+    this.form.reset();
+    this.editToggle = !this.editToggle;
+  }
+
+  updateUser() {
+    if (this.form.invalid) {
+      this.form.setErrors({ invalid: true });
+      return;
+    }
+    this.users = this.users.map((user) => {
+      if (user.id == this.form.value.id) return this.form.value;
+      return user;
+    });
+    this.editToggle = !this.editToggle;
+    this.usersApi.update(this.form.value).subscribe({
+      next: (newUser) => {
+        console.log(newUser);
+        this.form.reset();
+      },
+    });
+  }
+
   ngOnInit(): void {
     this.usersApi.getAll().subscribe({
       next: (usersFromDB) => {
@@ -51,6 +89,10 @@ export class UsersListComponent implements OnInit {
   }
 
   addUser(target: HTMLElement) {
+    if (this.editToggle) {
+      alert('please Submit or cancel your Edit ');
+      return;
+    }
     if (this.form.invalid) {
       this.form.setErrors({ invalid: true });
       target.scrollIntoView({ behavior: 'smooth' });
@@ -64,7 +106,6 @@ export class UsersListComponent implements OnInit {
         console.log(error);
       },
     });
-    // console.log(this.form.value);
     this.form.reset();
   }
 
@@ -86,11 +127,10 @@ export class UsersListComponent implements OnInit {
   }
 
   deleteUser(user: User) {
-    let index = this.users.indexOf(user);
-    this.users.splice(index, 1);
+    this.users.splice(this.users.indexOf(user), 1);
     this.usersApi.delete(user.id).subscribe({
       error: (error) => {
-        this.users.splice(index, 0, user);
+        this.users.splice(this.users.indexOf(user), 0, user);
         console.log(error);
       },
     });

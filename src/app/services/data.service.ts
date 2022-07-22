@@ -12,12 +12,12 @@ export class DataService {
     return this.http.get(`${this.url}/${id}`);
   }
 
-  create(response: any): Observable<any> {
-    return this.http.post(this.url, response);
+  create(resourse: any): Observable<any> {
+    return this.http.post(this.url, resourse);
   }
 
-  update(response: any) {
-    return this.http.put(this.url, response);
+  update(resourse: any) {
+    return this.http.put(`${this.url}/${resourse.id}`, resourse);
   }
 
   delete(id: any) {

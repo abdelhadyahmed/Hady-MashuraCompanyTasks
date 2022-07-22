@@ -39,7 +39,7 @@
       [formGroup]="form"
       (submit)="addUser(target)"
     >
-      <h1>Add user</h1>
+      <h1>{{ editToggle ? "Edit" : "Add" }} user</h1>
       <div class="alert alert-danger" *ngIf="form.errors?.['invalid']">
         Please check your fields if it is not valid or empty!
       </div>
@@ -147,7 +147,13 @@
           <form-error [control]="form.get('company.name')"></form-error>
         </div>
       </div>
-      <button class="btn btn-custom btn-primary">Add</button>
+      <div *ngIf="editToggle">
+        <button class="btn btn-info me-2" (click)="updateUser()">Update</button>
+        <button class="btn btn-danger" (click)="cancelEdit()">Cancel</button>
+      </div>
+      <button class="btn btn-custom btn-primary" *ngIf="!editToggle">
+        Add
+      </button>
     </form>
   </div>
 
@@ -174,7 +180,7 @@
             <div class="d-flex justify-content-between align-content-center">
               <mat-icon
                 [ngStyle]="{ color: 'orange', cursor: 'pointer' }"
-                (click)="deleteUser(user)"
+                (click)="editUser(user)"
                 >edit</mat-icon
               >
               <mat-icon
