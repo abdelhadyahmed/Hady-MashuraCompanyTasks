@@ -8,7 +8,4 @@ import { User } from 'src/app/types/user';
 })
 export class UsersTableComponent {
   @Input('users') users?: User[];
-
-  displayedColumns: string[] = ['id', 'name', 'email', 'phone'];
-  // dataSource = this.users;
 }

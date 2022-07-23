@@ -32,13 +32,9 @@
       </tbody>
     </table>
   </div>
-  <div class="form-container">
-    <form
-      #target
-      class="form mb-2"
-      [formGroup]="form"
-      (submit)="addUser(target)"
-    >
+
+  <div #target class="form-container">
+    <form class="form mb-2" [formGroup]="form" (submit)="addUser()">
       <h1>{{ editToggle ? "Edit" : "Add" }} user</h1>
       <div class="alert alert-danger" *ngIf="form.errors?.['invalid']">
         Please check your fields if it is not valid or empty!

@@ -10,14 +10,15 @@ import { UserValidators } from 'src/app/validators/user.validators';
   styleUrls: ['./users-list.component.css'],
 })
 export class UsersListComponent implements OnInit {
-  // @ViewChild('target') target!: ElementRef;
-  form: FormGroup;
-  users!: User[];
+  @ViewChild('target') target!: ElementRef;
   searchedUser!: User;
   userId: string = '';
+  form: FormGroup;
+  users!: User[];
   editToggle: boolean = false;
+  addToggle: boolean = false;
 
-  constructor(fb: FormBuilder, private usersApi: UserService) {
+  constructor(fb: FormBuilder, private usersApis: UserService) {
     this.form = fb.group({
       id: [''],
       name: ['', Validators.required],
@@ -45,66 +46,27 @@ export class UsersListComponent implements OnInit {
     });
   }
 
-  editUser(user: User) {
-    if (this.editToggle) {
-      this.editToggle = !this.editToggle;
-      this.form.reset();
-    } else {
-      // make all fields touchd to get all errors
-      this.form.patchValue(user);
-      this.editToggle = !this.editToggle;
-    }
-  }
-
-  cancelEdit() {
-    console.log(this.form.value);
-    this.form.reset();
-    this.editToggle = !this.editToggle;
-  }
-
-  updateUser() {
-    if (this.form.invalid) {
-      this.form.setErrors({ invalid: true });
-      return;
-    }
-    this.users = this.users.map((user) => {
-      if (user.id == this.form.value.id) return this.form.value;
-      return user;
-    });
-    this.editToggle = !this.editToggle;
-    this.usersApi.update(this.form.value).subscribe({
-      next: (newUser) => {
-        console.log(newUser);
-        this.form.reset();
-      },
-    });
-  }
-
   ngOnInit(): void {
-    this.usersApi.getAll().subscribe({
-      next: (usersFromDB) => {
-        this.users = usersFromDB as User[];
-      },
+    this.usersApis.getAll().subscribe({
+      next: (usersFromDB) => (this.users = usersFromDB as User[]),
     });
   }
 
-  addUser(target: HTMLElement) {
-    if (this.editToggle) {
-      alert('please Submit or cancel your Edit ');
-      return;
-    }
+  addUser() {
     if (this.form.invalid) {
       this.form.setErrors({ invalid: true });
-      target.scrollIntoView({ behavior: 'smooth' });
+      this.form.markAllAsTouched();
+      this.target.nativeElement.scrollIntoView({ behavior: 'smooth' });
       return;
     }
     this.form.setErrors({ invalid: true });
-    this.users = [...this.users, this.form.value as User];
-    this.usersApi.create(this.form.value).subscribe({
-      error: (error) => {
-        this.users.splice(this.users.length - 1, 1);
-        console.log(error);
+    let user = this.form.value as User;
+    this.users = [user, ...this.users];
+    this.usersApis.create(this.form.value).subscribe({
+      next: (newUser) => {
+        user.id = newUser.id;
       },
+      error: () => this.users.splice(this.users.length - 1, 1),
     });
     this.form.reset();
   }
@@ -114,25 +76,48 @@ export class UsersListComponent implements OnInit {
       alert('Please enter user id!');
       return;
     }
-    this.usersApi.getById(this.userId).subscribe({
+    this.usersApis.getById(this.userId).subscribe({
       next: (user) => {
         this.searchedUser = user as User;
         this.userId = '';
       },
-      error: (error: Response) => {
-        if (error.status === 404)
-          alert('This user not found or it would be deleted!');
+    });
+  }
+
+  editUser(user: User) {
+    if (this.editToggle) this.editToggle = !this.editToggle;
+    if (!this.editToggle) this.editToggle = !this.editToggle;
+    this.target.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    this.form.patchValue(user);
+    this.form.markAllAsTouched();
+  }
+
+  cancelEdit() {
+    this.form.reset();
+    this.editToggle = !this.editToggle;
+  }
+
+  updateUser() {
+    if (this.form.invalid) {
+      this.form.setErrors({ invalid: true });
+      return;
+    }
+    this.editToggle = !this.editToggle;
+    this.usersApis.update(this.form.value).subscribe({
+      next: (updatedUser) => {
+        this.users = this.users.map((user) => {
+          if (user.id == (updatedUser as User).id) return updatedUser as User;
+          return user;
+        });
+        this.form.reset();
       },
     });
   }
 
   deleteUser(user: User) {
     this.users.splice(this.users.indexOf(user), 1);
-    this.usersApi.delete(user.id).subscribe({
-      error: (error) => {
-        this.users.splice(this.users.indexOf(user), 0, user);
-        console.log(error);
-      },
+    this.usersApis.delete(user.id).subscribe({
+      error: () => this.users.splice(this.users.indexOf(user), 0, user),
     });
   }
 }
