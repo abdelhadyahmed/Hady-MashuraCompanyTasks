@@ -4,7 +4,10 @@
       <th scope="col">Name</th>
       <th scope="col">Username</th>
       <th scope="col">Email</th>
+      <th scope="col">City</th>
+      <th scope="col">Street</th>
       <th scope="col">Phone</th>
+      <th scope="col">Website</th>
       <th scope="col">company</th>
       <th scope="col">Actions</th>
     </tr>
@@ -14,18 +17,21 @@
       <td>{{ user.name }}</td>
       <td>{{ user.username }}</td>
       <td>{{ user.email }}</td>
+      <td>{{ user.address.city }}</td>
+      <td>{{ user.address.street }}</td>
       <td>{{ user.phone }}</td>
+      <td>{{ user.website }}</td>
       <td>{{ user.company.name }}</td>
       <td>
         <div class="d-flex justify-content-between align-content-center">
           <mat-icon
             [ngStyle]="{ color: 'orange', cursor: 'pointer' }"
-            (click)="editUser(user)"
+            (click)="onEdit(user)"
             >edit</mat-icon
           >
           <mat-icon
             [ngStyle]="{ color: 'red', cursor: 'pointer' }"
-            (click)="deleteUser(user)"
+            (click)="onDelete(user)"
             >delete</mat-icon
           >
         </div>

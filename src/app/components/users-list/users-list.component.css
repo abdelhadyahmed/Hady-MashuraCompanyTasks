@@ -41,3 +41,7 @@
 .search-container{
   margin-top: 30px;
 }
+
+.container{
+  min-height: calc(100vh - 160px);
+}

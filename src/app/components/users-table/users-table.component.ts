@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { User } from 'src/app/types/user';
 
 @Component({
@@ -8,4 +8,14 @@ import { User } from 'src/app/types/user';
 })
 export class UsersTableComponent {
   @Input('users') users?: User[];
+  // @Input('searchedUser') searchedUser?: User[];
+  @Output('editEvent') editEvent = new EventEmitter();
+  @Output('deletEvent') deletEvent = new EventEmitter();
+
+  onEdit(user: User) {
+    this.editEvent.emit(user);
+  }
+  onDelete(user: User) {
+    this.deletEvent.emit(user);
+  }
 }

@@ -15,10 +15,10 @@ import { MatTableModule } from '@angular/material/table';
 import { UsersTableComponent } from './components/users-table/users-table.component';
 import { MatIconModule } from '@angular/material/icon';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { RouterModule } from '@angular/router';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { PostsComponent } from './components/posts/posts.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { AppRoutingModule } from './app-routing.modules';
 
 @NgModule({
   declarations: [
@@ -40,11 +40,7 @@ import { FooterComponent } from './components/footer/footer.component';
     BrowserAnimationsModule,
     MatTableModule,
     MatIconModule,
-    RouterModule.forRoot([
-      { path: 'first-task', component: PostsComponent },
-      { path: 'second-task', component: UsersListComponent },
-      { path: '**', component: NotFoundComponent },
-    ]),
+    AppRoutingModule,
   ],
   providers: [UserService, PostService],
   bootstrap: [AppComponent],

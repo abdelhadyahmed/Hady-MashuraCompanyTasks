@@ -17,6 +17,8 @@ export class UsersListComponent implements OnInit {
   users!: User[];
   editToggle: boolean = false;
   addToggle: boolean = false;
+  isSuccessAdding: boolean = false;
+  isSuccessEdit: boolean = false;
 
   constructor(fb: FormBuilder, private usersApis: UserService) {
     this.form = fb.group({
@@ -52,6 +54,10 @@ export class UsersListComponent implements OnInit {
     });
   }
 
+  openUserForm() {
+    this.addToggle = !this.addToggle;
+  }
+
   addUser() {
     if (this.form.invalid) {
       this.form.setErrors({ invalid: true });
@@ -65,10 +71,15 @@ export class UsersListComponent implements OnInit {
     this.usersApis.create(this.form.value).subscribe({
       next: (newUser) => {
         user.id = newUser.id;
+        this.isSuccessAdding = true;
+        setTimeout(() => {
+          this.isSuccessAdding = false;
+        }, 4000);
       },
       error: () => this.users.splice(this.users.length - 1, 1),
     });
     this.form.reset();
+    if (this.addToggle) this.addToggle = false;
   }
 
   searchById() {
@@ -85,14 +96,16 @@ export class UsersListComponent implements OnInit {
   }
 
   editUser(user: User) {
-    if (this.editToggle) this.editToggle = !this.editToggle;
-    if (!this.editToggle) this.editToggle = !this.editToggle;
+    if (!this.addToggle) this.addToggle = true;
+    if (this.editToggle) this.editToggle = false;
+    if (!this.editToggle) this.editToggle = true;
     this.target.nativeElement.scrollIntoView({ behavior: 'smooth' });
     this.form.patchValue(user);
     this.form.markAllAsTouched();
   }
 
   cancelEdit() {
+    if (this.addToggle) this.addToggle = false;
     this.form.reset();
     this.editToggle = !this.editToggle;
   }
@@ -102,6 +115,7 @@ export class UsersListComponent implements OnInit {
       this.form.setErrors({ invalid: true });
       return;
     }
+
     this.editToggle = !this.editToggle;
     this.usersApis.update(this.form.value).subscribe({
       next: (updatedUser) => {
@@ -110,11 +124,23 @@ export class UsersListComponent implements OnInit {
           return user;
         });
         this.form.reset();
+        this.isSuccessEdit = true;
+        setTimeout(() => {
+          this.isSuccessEdit = false;
+        }, 4000);
       },
     });
+    this.addToggle = false;
   }
 
   deleteUser(user: User) {
+    if (
+      !confirm(
+        `Are you sure to delete this user with name: ${user.name}! \n This will be a permenant delete!`
+      )
+    ) {
+      return;
+    }
     this.users.splice(this.users.indexOf(user), 1);
     this.usersApis.delete(user.id).subscribe({
       error: () => this.users.splice(this.users.indexOf(user), 0, user),

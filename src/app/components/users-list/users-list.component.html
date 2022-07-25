@@ -1,4 +1,10 @@
 <div class="container">
+  <div
+    *ngIf="isSuccessAdding || isSuccessEdit"
+    class="alert alert-success mt-4"
+  >
+    <strong>Successfully {{ isSuccessAdding ? "added" : "updated" }}!</strong>
+  </div>
   <div class="search-container">
     <form class="d-flex" (submit)="searchById()">
       <input
@@ -9,7 +15,7 @@
         aria-label="Search"
         [(ngModel)]="userId"
       />
-      <button class="btn btn-outline-success" type="submit">GetUser</button>
+      <button class="btn btn-secondary" type="submit">GetUser</button>
     </form>
     <table *ngIf="searchedUser" class="table table-striped table-hover mt-2">
       <thead>
@@ -17,7 +23,10 @@
           <th scope="col">Name</th>
           <th scope="col">Username</th>
           <th scope="col">Email</th>
+          <th scope="col">City</th>
+          <th scope="col">Street</th>
           <th scope="col">Phone</th>
+          <th scope="col">Website</th>
           <th scope="col">company</th>
         </tr>
       </thead>
@@ -26,14 +35,18 @@
           <td>{{ searchedUser.name }}</td>
           <td>{{ searchedUser.username }}</td>
           <td>{{ searchedUser.email }}</td>
+          <td>{{ searchedUser.address.city }}</td>
+          <td>{{ searchedUser.address.street }}</td>
           <td>{{ searchedUser.phone }}</td>
+          <td>{{ searchedUser.website }}</td>
           <td>{{ searchedUser.company.name }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div #target class="form-container">
+  <div #target></div>
+  <div class="form-container" *ngIf="addToggle">
     <form class="form mb-2" [formGroup]="form" (submit)="addUser()">
       <h1>{{ editToggle ? "Edit" : "Add" }} user</h1>
       <div class="alert alert-danger" *ngIf="form.errors?.['invalid']">
@@ -154,40 +167,13 @@
   </div>
 
   <div class="table-container">
-    <table class="table table-striped table-hover mt-2">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Username</th>
-          <th scope="col">Email</th>
-          <th scope="col">Phone</th>
-          <th scope="col">company</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of users">
-          <td>{{ user.name }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.phone }}</td>
-          <td>{{ user.company.name }}</td>
-          <td>
-            <div class="d-flex justify-content-between align-content-center">
-              <mat-icon
-                [ngStyle]="{ color: 'orange', cursor: 'pointer' }"
-                (click)="editUser(user)"
-                >edit</mat-icon
-              >
-              <mat-icon
-                [ngStyle]="{ color: 'red', cursor: 'pointer' }"
-                (click)="deleteUser(user)"
-                >delete</mat-icon
-              >
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <button class="btn btn-primary mt-4" (click)="openUserForm()">
+      {{ addToggle ? "Cancel Add" : "Add" }} user
+    </button>
   </div>
+  <users-table
+    (editEvent)="editUser($event)"
+    (deletEvent)="deleteUser($event)"
+    [users]="users"
+  ></users-table>
 </div>
