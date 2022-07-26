@@ -13,20 +13,22 @@ export class UsersListComponent implements OnInit {
   @ViewChild('target') target!: ElementRef;
   searchedUser!: User;
   userId: string = '';
-  form: FormGroup;
+  form!: FormGroup;
   users!: User[];
   editToggle: boolean = false;
   addToggle: boolean = false;
   isSuccessAdding: boolean = false;
   isSuccessEdit: boolean = false;
 
-  constructor(fb: FormBuilder, private usersApis: UserService) {
-    this.form = fb.group({
+  constructor(private fb: FormBuilder, private usersApis: UserService) {}
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
       id: [''],
       name: ['', Validators.required],
       username: ['', [Validators.required, UserValidators.canNotContainSpace]],
       email: ['', [Validators.required, Validators.email]],
-      address: fb.group({
+      address: this.fb.group({
         street: ['', Validators.required],
         suite: ['', Validators.required],
         city: ['', Validators.required],
@@ -42,13 +44,11 @@ export class UsersListComponent implements OnInit {
         ],
       ],
       website: ['', Validators.required],
-      company: fb.group({
+      company: this.fb.group({
         name: ['', Validators.required],
       }),
     });
-  }
 
-  ngOnInit(): void {
     this.usersApis.getAll().subscribe({
       next: (usersFromDB) => (this.users = usersFromDB as User[]),
     });
